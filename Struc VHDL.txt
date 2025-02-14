@@ -1,0 +1,48 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity struc is
+port(CLK1      : in std_logic;
+     CLK2      : in std_logic;
+     Tin_Data  : in std_logic_vector(7 downto 0);
+     Rout_DATA : out std_logic_vector(7 downto 0)
+);
+end struc;
+
+architecture HAS of struc is
+component T_UART 
+port(   CLK1      : in std_logic;            
+        Tin_Data  : in std_logic_vector(7 downto 0); 
+        Tx_active : out std_logic;
+        tx_out    : out std_logic;          
+        Tx_busy   : out std_logic            
+    );
+end component;
+component R_UART 
+port(   CLK2       : in std_logic;            
+        Rx_in      : in std_logic; 
+        Rx_active  : in std_logic;
+        Rout_DATA  : out std_logic_vector(7 downto 0);           
+        Rx_busy    : out std_logic             
+    );
+end component;
+signal out_in : std_logic;
+signal ACT : std_logic;
+signal B : std_logic;
+begin
+L1 : T_UART port map (
+      CLK1 => CLK1,
+      Tin_Data => Tin_Data,
+      Tx_active => ACT,
+      tx_out => out_in,
+      Tx_busy => B
+);
+L2 : R_UART port map (
+      CLK2 => CLK2,
+      Rx_active => ACT,
+      Rout_DATA => Rout_DATA,
+      Rx_in => out_in,
+      Rx_busy => B
+);
+end HAS;
